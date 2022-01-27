@@ -231,9 +231,10 @@ st.plotly_chart(TimePlot2,use_container_width=True)
 st.markdown('## Scatterplot of Gender versus Timing')
 st.markdown('The size of the bubble indicates performance (larger bubble=high performance).')
 st.markdown('Performance appears similar across Gender Groups.  Most of the timing outliers were Female respondents.')
-TimePlot3 = px.scatter(df, x="rt_total", y="gender_coded", size="sum_score", color="gender", color_discrete_sequence=['blue','darkred'],hover_name="gender", log_x=False, size_max=75)
-TimePlot3.update_xaxes(title_text='Timing in Seconds')
+TimePlot3 = px.scatter(df, x="rt_total", y="gender_coded", size="sum_score", color="gender", color_discrete_sequence=['blue','darkred'],hover_name="gender", log_x=True, size_max=75)
+TimePlot3.update_xaxes(title_text='Timing in Seconds (Log Scale)')
 TimePlot3.update_yaxes(visible=False,title_text='')
+TimePlot3.update_traces(opacity=0.10)
 st.plotly_chart(TimePlot3,use_container_width=True)
 
 #Means for all Timing and Scored Item variables
@@ -602,7 +603,8 @@ cm = confusion_matrix(depvartest1, model1.predict(test1))
 st.markdown("## Confusion Matrix")
 st.markdown('75% of the records were correctly classified.  The false correct / false incorrect off-diagonal misclassification counts were fairly balanced.')
 fig, ax = plt.subplots(figsize=(8, 8))
-ax.imshow(cm)
+
+ax.imshow(cm,cmap="Greens", alpha=0.7, interpolation='nearest')
 ax.grid(False)
 ax.xaxis.set(ticks=(0, 1), ticklabels=('Predicted Incorrect (0)', 'Predicted Correct (1)'))
 ax.yaxis.set(ticks=(0, 1), ticklabels=('Actual Incorrect (0)', 'Actual Correct (1)'))
@@ -648,7 +650,10 @@ st.markdown('73% of the records were correctly classified, with a bias towards p
 cm = confusion_matrix(depvartest2, model2.predict(test2))
 
 fig, ax = plt.subplots(figsize=(8, 8))
-ax.imshow(cm)
+
+ax.imshow(cm,cmap="Greens", alpha=0.7, interpolation='nearest')
+
+
 ax.grid(False)
 ax.xaxis.set(ticks=(0, 1), ticklabels=('Predicted Incorrect (0)', 'Predicted Correct (1)'))
 ax.yaxis.set(ticks=(0, 1), ticklabels=('Actual Incorrect (0)', 'Actual Correct (1)'))

@@ -61,7 +61,6 @@ st.title("The Data")
 
 #take a look at the file
 df
-#df.tail(20)
 
 #group the gender, age_group, and home_computer variables so they can be displayed in pie charts
 
@@ -89,7 +88,7 @@ fig=px.pie(homecompcounts, values='sum_score', names=homecomplevs)
 fig.update_layout(uniformtext_minsize=35, uniformtext_mode='hide', legend_font_size=22)
 st.plotly_chart(fig)
 
-# Time Distributions
+# Time Distributions and Score Distributions - recoding to use in displays
 timingtotfreqs_all=pd.DataFrame(df['rt_total'])
 
 #By Gender
@@ -128,23 +127,14 @@ scoretotfreqs_HomeN=df[df['home_computer'] =="No"]
 scoretotfreqs_HomeN=scoretotfreqs_HomeN["sum_score"]
 
 #Overall Timing
-#4
-#fig = px.histogram(df, x="rt_total", nbins=50)
+#4 with filter bar
 
-#fig.update_xaxes(range=[0,5000])
-#st.plotly_chart(fig)
-
-
-
-#4A Try and do a filter bar
-# -- sidebar to filter data --
 st.markdown('## Overall Timing Distribution')
 score_low, score_high = st.slider('Please select Sum Score range:',1, 20,(1,20))
 
 st.markdown('Almost all respondents completed the assessment in under 1,000 seconds.  We can use the slider bar to compare high ability students who answered 19 or 20 questions correctly to those that answered fewer questions correctly.')
 st.markdown('The distribution across performance levels seems roughly similar.')
 df_abil = df.query('sum_score>= @score_low and sum_score <= @score_high')
-#df_abil=df.query('ability_group>=@score_low and ability_group <= @score_high')
 fig4 = px.histogram(df_abil,x='rt_total',nbins=50, color_discrete_sequence = ['darkred'], labels={'x':'Timing In Seconds'})
 fig4.update_xaxes(range=[0,5000])
 fig4.update_xaxes(title_text='Timing in Seconds')
@@ -167,18 +157,15 @@ fig5.update_yaxes(title_text='Frequency')
 # Overlay both histograms
 fig5.update_layout(barmode='overlay')
 # Reduce opacity to see both histograms
-fig5.update_traces(opacity=0.50)
+fig5.update_traces(opacity=0.40)
 st.plotly_chart(fig5,use_container_width=True)
 
 
-#6 -- sidebar to filter data --
+#6 Score Distribution with age toggle bar, broken down by gender
 st.markdown('## Overall Score Distribution')
 age_low, age_high = st.slider('Please select age range:',18, 70,(18,70))
 st.markdown('The total score distributions look similar for Males and Females, although a greater number of Male students answered all 20 questions correctly.')
 st.markdown('This appears to be true for different age groups as well, though most notable for younger respondents.')
-
-
-
 df_age = df.query('age>= @age_low and age <= @age_high')
 
 fig6_hist = px.histogram(df_age,x='sum_score',facet_row = 'gender',color = 'gender', color_discrete_sequence=['blue','darkred'])
@@ -187,7 +174,7 @@ fig6_hist.update_yaxes(title_text='Frequency')
 
 st.plotly_chart(fig6_hist,use_container_width=True)
 
-#7 NOT PRESENTED IN STREAMLIT
+# NOT PRESENTED IN STREAMLIT
 #st.markdown('## Score Distribution by Gender: Overlay')
 #fig = go.Figure()
 #fig.add_trace(go.Histogram(x=scoretotfreqs_female,name='Total Score: Females'))
@@ -202,7 +189,7 @@ st.plotly_chart(fig6_hist,use_container_width=True)
 #fig.update_traces(opacity=0.50)
 #st.plotly_chart(fig)
 
- 
+#SCATTER PLOTS 
     
 #7
 st.markdown('## Scatterplot of Sum Score versus Timing')
@@ -237,9 +224,7 @@ TimePlot3.update_yaxes(visible=False,title_text='')
 TimePlot3.update_traces(opacity=0.10)
 st.plotly_chart(TimePlot3,use_container_width=True)
 
-#Means for all Timing and Scored Item variables
-#df.groupby('group_column')['sum_column'].sum() 
-#this gives us the # correct for gs_1
+#Means for all Timing and Scored Item variables - for historgrams across items
 
 allmeans=pd.DataFrame(df.mean())
 allmeansT=pd.DataFrame(allmeans.T)
@@ -255,13 +240,11 @@ print(allabilmeans)
 print(allhomecompmeans)
 
 #This is just timing and scores overall
-#allmeansT_time=allmeansT.iloc[:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]]
+
 allmeansT_time=allmeansT.loc[:,allmeansT.columns.str.startswith('rt_gs')]
 allmeansT_scores=allmeansT.loc[:,allmeansT.columns.str.startswith('gs')]
-#allmeansT_time
-#allmeansT_scores
 
-#This is all items, timing and scoring
+#This is all items, timing and scoring - needs to be flattened to display using my histogram method
 female=allgendermeans.head(1)
 male=allgendermeans.tail(1)
 allmeansT=allmeansT.head(1)
@@ -284,7 +267,7 @@ print(allmeansT_time)
 print(allmeansT_scores)
 
 
-#Try to do a histogram of all timing values overall
+#histogram of all timing values overall
 #10
 st.markdown('## Mean Timing Across All Items')
 st.markdown('Item 7, Item 9, and Item 13 took more time to answer than other items.  ')
@@ -297,7 +280,6 @@ print(x_axis)
 print(allmeansT_time)
 
 plt.bar(x_axis, allmeansT_time, width=0.9, color ='maroon', label = 'Item Timing: All Records')
-#plt.bar(x_axis +0.2, male, width=0.4, label = 'Male')
 
 # Xticks
 
@@ -314,7 +296,7 @@ st.pyplot(plt)
 plt.clf()
 #Items 7, 9 and 13 had highest time
 
-#Try to do a histogram of all item performance
+#histogram of all item performance
 #11
 
 st.markdown('## Item Performance Across All Items')
@@ -329,7 +311,6 @@ print(x_axis)
 print(allmeansT_scores)
 
 plt.bar(x_axis, allmeansT_scores, width=0.8, label = 'Item Difficulty: All Records')
-#plt.bar(x_axis +0.2, male, width=0.4, label = 'Male')
 
 # Xticks
 
@@ -343,14 +324,10 @@ plt.legend().set_visible(False)
 
 st.pyplot(plt)
 plt.clf()
-#Items 7, 9 and 13 had highest time
 
 #Examine Items 7, 9, and 13 in more detail  
 #Break down timing by gender and ability level
 #Break down performance by gender and age
-#allgendermeans
-#allabilmeans
-#allagemeans
 
 gender_T_I7_I9_I13=allgendermeans[['rt_gs_7','rt_gs_9','rt_gs_13']]
 abil_T_I7_I9_I13=allabilmeans[['rt_gs_7','rt_gs_9','rt_gs_13']]
@@ -412,7 +389,7 @@ age_5_S_I7_I9_I13=age_S_I7_I9_I13.iloc[[4]]
 age_5_S_I7_I9_I13=age_5_S_I7_I9_I13.to_numpy()
 age_5_S_I7_I9_I13=age_5_S_I7_I9_I13.flatten()
 
-#Try to do a histogram of all timing values overall
+#histogram of all timing values overall
 #12
 
 st.markdown('## Looking at Items 7, 9, and 13 More Closely')
@@ -422,7 +399,6 @@ st.markdown('Item 9 took longer for Female respondents, but the timing distribut
 x_axis_label=  ['Item 7','Item 9','Item 13']
 x_axis = np.arange(len(x_axis_label))
 
-# Multi bar Chart
 # Multi bar Chart
 
 plt.bar(x_axis -0.2, female_T_I7_I9_I13, width=0.4, label = 'Female',  color ='maroon')
@@ -440,7 +416,8 @@ plt.legend()
 
 st.pyplot(plt)
 plt.clf()
-#Try to do a histogram of all score values overall
+
+#histogram of all score values overall
 #13
 x_axis_label=  ['Item 7','Item 9','Item 13']
 x_axis = np.arange(len(x_axis_label))
@@ -465,7 +442,8 @@ plt.legend()
 
 st.pyplot(plt)
 plt.clf()
-#Try to do a histogram of all timing values overall
+
+#histogram of all timing values overall
 #14
 st.markdown('## Score Performance - By Ability Group')
 st.markdown('Low ability students rarely answered Item 13 correctly.  With the exception of Item 13, there are many easy items that offer little discrimination amongst student abilities.')  
@@ -473,7 +451,6 @@ st.markdown('Low ability students rarely answered Item 13 correctly.  With the e
 x_axis_label=  ['Item 7','Item 9','Item 13']
 x_axis = np.arange(len(x_axis_label))
 
-# Multi bar Chart
 # Multi bar Chart
 
 plt.bar(x_axis -0.3, lowabil_S_I7_I9_I13, width=0.3, label = 'Low', color='maroon')
@@ -493,7 +470,8 @@ plt.legend(loc='lower center')
 plt.ylabel("Proportion Correct")
 st.pyplot(plt)
 plt.clf()
-#Try to do a histogram of all timing values overall
+
+#histogram of all timing values overall
 #15
 st.markdown('## Score Performance - By Age Group')
 st.markdown('Older students scored higher on Items 7 and 13.  Performance was similar across Age Groups for Item 9.')  
@@ -538,7 +516,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import statsmodels.api as sm
 from sklearn import metrics
 
-# create dummy-coded 0/1 versions of ability, age, gender, and home_computer.  
+# create dummy-coded 0/1 versions of ability, age, gender, and home_computer to use as predictors with reference group coded as zero.  
 
 dflog=df
 dflog.loc[df['ability']=='Low','ability_coded'] = 0
@@ -555,7 +533,6 @@ dflog.loc[df['gender'] == 'Female', 'gender_coded'] = 0
 dflog.loc[df['gender'] == 'Male', 'gender_coded'] = 1
 dflog.loc[df['home_computer'] == 'No', 'home_computer_coded'] = 0
 dflog.loc[df['home_computer'] == 'Yes', 'home_computer_coded'] = 1
-#dflog
 
 #Retain the final 100 records in the datafile as a test or validation set.  Use the 1069 records to train my model
 dflog_train=dflog.head(1069)
@@ -618,7 +595,7 @@ for i in range(2):
 st.pyplot(plt)
 
 
-#MULTIPLE PREDICTORS, CAN I DO BETTER?
+#MULTIPLE PREDICTORS, CAN I DO BETTER?  SUM SCORE, GENDER, AND HOME COMPUTER USE AS PREDICTORS
 
 preds2=dflog_train[['sum_score','gender_coded','home_computer_coded']]
 depvar=dflog_train[['gs_13']]
